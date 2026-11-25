@@ -8,9 +8,9 @@ Climber — a paper-trading bot for make.fun's "Pump.fun Sharpe Sprint — Clean
 
 ## Strategy
 
-Most new pump.fun coins never attract real demand, and the opening spike is faster than the replay's 2-slot fill latency, so sniping the launch loses a little on almost every coin. Climber instead buys only coins whose real SOL reserve has climbed to 20 SOL (proven demand), sells when the reserve climbs to 1.5x the entry reserve, pyramids into a climb that keeps climbing (up to 1 SOL per coin), and protects gains with a trailing stop (arms at +20% over cost, sells on a 35% fall from the best value). There is no fixed take-profit and no hard stop-loss — on the dev window every stop-loss tested made the result worse, because dips recover. A coin with no trade for 60,000 slots is sold so its slot can be reused. At most 5 open positions; every round trip is at least 0.01 SOL.
+Most new pump.fun coins never attract real demand, and the opening spike is faster than the replay's 2-slot fill latency, so sniping the launch loses a little on almost every coin. Climber instead buys only coins whose real SOL reserve has climbed to 20 SOL (proven demand), sells when the reserve climbs to 1.5x the entry reserve, and tops each coin up to 1 SOL while its reserve keeps climbing. Gains are protected by a trailing stop (arms at +20% over cost, sells on a 35% fall from the best value). There is no fixed take-profit and no hard stop-loss — on the dev window every stop-loss tested made the result worse, because dips recover. A coin with no trade for 60,000 slots is sold so its slot can be reused. At most 5 open positions; every round trip is at least 0.01 SOL.
 
-Measured with the kit's own simulator on the frozen dev window (24 h, 1,222 mints): net **+1.27 SOL** over the full window (both halves positive), 34 distinct mints, max drawdown 8%.
+Measured with the kit's local grader on the frozen dev window (24 h, 1,222 mints): net **+1.47 SOL** (+14.7%), hourly Sharpe **+0.125**, win rate 53%, 30 distinct mints, max drawdown 14.6% — and still +0.69 SOL if all fees doubled. All house baselines lose on the same window (sniper −0.50 SOL, reversion −3.99 SOL, momentum −9.44 SOL).
 
 ## Run it
 
