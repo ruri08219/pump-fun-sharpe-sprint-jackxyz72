@@ -23,7 +23,9 @@
 //
 // Guardrails: at most 5 open positions; one first buy per coin, at least
 // 0.01 SOL (the round-trip minimum); buys capped at 1% of the coin's real
-// SOL reserve, as the harness requires.
+// SOL reserve, as the harness requires; no entry on a coin whose real or
+// virtual reserves are not positive (a malformed curve can never be valued
+// or sold, so buying it would burn the stake).
 
 import { BPS, LAMPORTS_PER_SOL, runBot, type Batch, type BotState, type OrderInput, type Pubkey } from './vendor/makefun-bot.ts';
 
@@ -179,6 +181,10 @@ function onBatch(state: BotState, batch: Batch): OrderInput[] {
     if (coin.done || coin.complete || coin.buyPending || held.has(coin.mint)) continue;
     const curve = state.curves.get(coin.mint);
     if (!curve || curve.complete) continue;
+    // Reject a malformed curve: with a zero or negative real or virtual
+    // reserve the coin can never be valued or sold, so entering it would
+    // burn the minimum stake for a position that can only exit stale.
+    if (curve.real_quote_reserves <= 0n || curve.virtual_quote_reserves <= 0n || curve.virtual_token_reserves <= 0n) continue;
     const real = curve.real_quote_reserves;
     const crossed = coin.prevReal < ENTRY_REAL && real >= ENTRY_REAL;
     const inBand = real >= ENTRY_REAL && real <= ENTRY_MAX_REAL && coin.prevReal < real;
